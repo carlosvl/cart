@@ -1,6 +1,23 @@
 <template>
     <div class="slds-var-p-around_small">
-        <div style={backgroundStyle} class="slds-container_fluid image"></div>
+        <div style={backgroundStyle} class="slds-container_fluid image">
+            <template if:true={imageLoading}>
+                <div class="slds-is-relative image-loading">
+                    <div class="slds-spinner_container">
+                        <div role="status" class="slds-spinner slds-spinner_small slds-spinner_brand">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+            <template if:true={imageError}>
+                <div class="image-error">
+                    <lightning-icon icon-name="utility:image" size="small" alternative-text="Image not available"></lightning-icon>
+                </div>
+            </template>
+        </div>
 
         <h1 class="slds-var-p-around_xx-small slds-var-m-top_x-small slds-truncate slds-text-title_caps bold-text">
             {product.Name}

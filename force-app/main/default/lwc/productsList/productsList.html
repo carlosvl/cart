@@ -1,10 +1,17 @@
 <template>
     <lightning-card title="Catalog" icon-name="standard:catalog">
         <lightning-layout multiple-rows horizontal-align="center">
-            <template for:each={products} for:item="product">
-                <lightning-layout-item key={product.Id} size="12" small-device-size="6" medium-device-size="4"
-                    large-device-size="3">
-                    <c-product-tile product={product}></c-product-tile>
+            <template if:true={products.length}>
+                <template for:each={products} for:item="product">
+                    <lightning-layout-item key={product.Id} size="12" small-device-size="6" medium-device-size="4"
+                        large-device-size="3">
+                        <c-product-tile product={product}></c-product-tile>
+                    </lightning-layout-item>
+                </template>
+            </template>
+            <template if:false={products.length}>
+                <lightning-layout-item size="12" class="slds-align_absolute-center slds-p-around_medium">
+                    <p>No products found. Please try a different search or filter criteria.</p>
                 </lightning-layout-item>
             </template>
         </lightning-layout>

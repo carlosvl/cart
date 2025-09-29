@@ -12,24 +12,19 @@
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
-                <fullName>Running shoes</fullName>
+                <fullName>Shoes</fullName>
                 <default>false</default>
-                <label>Running shoes</label>
+                <label>Shoes</label>
             </value>
             <value>
-                <fullName>Boot</fullName>
+                <fullName>Clothing</fullName>
                 <default>false</default>
-                <label>Boot</label>
+                <label>Clothing</label>
             </value>
             <value>
-                <fullName>Formal shoes</fullName>
+                <fullName>Bike Parts</fullName>
                 <default>false</default>
-                <label>Formal shoes</label>
-            </value>
-            <value>
-                <fullName>Hiking shoes</fullName>
-                <default>false</default>
-                <label>Hiking shoes</label>
+                <label>Bike Parts</label>
             </value>
         </valueSetDefinition>
     </valueSet>
