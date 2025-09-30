@@ -136,6 +136,7 @@ public with sharing class ProductService {
 		insert ord;
 
 		List<Order_Line_Item__c> oliList = new List<Order_Line_Item__c>();
+        Decimal totalOrderPrice = 0;
 
 		for(ProductOrderWrapper product : productData){
 			Order_Line_Item__c oli = new Order_Line_Item__c();
@@ -143,13 +144,102 @@ public with sharing class ProductService {
 			oli.Product__c = product.Id;
 			oli.Price__c = product.price;
 			oli.Quantity__c = product.quantity;
+            // Calculate total price for tracking but don't set formula field
+            Decimal lineItemTotal = product.price * product.quantity;
+            totalOrderPrice += lineItemTotal;
 			oliList.add(oli);
 		}
 
 		insert oliList;
+        
+        // Don't update the order with total price as it's a formula field
+        // that will be calculated automatically
+        System.debug('Total order price calculated: ' + totalOrderPrice);
 		
 		return ord.Id;
 	}
+    
+    /**
+     * Method to retrieve order details including line items
+     */
+    @AuraEnabled(cacheable=true)
+    public static OrderDetailsWrapper getOrderDetails(String orderId) {
+        if (String.isBlank(orderId)) {
+            return null;
+        }
+        
+        try {
+            // Query the Order and related Line Items
+            Order__c order = [
+                SELECT Id, Name, Total_Price__c, CreatedDate
+                FROM Order__c
+                WHERE Id = :orderId
+                LIMIT 1
+            ];
+            
+            // Query the Order Line Items with Product details
+            List<Order_Line_Item__c> lineItems = [
+                SELECT Id, Name, Product__c, Product__r.Name, Product__r.Image_URL__c, 
+                       Price__c, Quantity__c, Total_Price__c
+                FROM Order_Line_Item__c
+                WHERE Order__c = :orderId
+                ORDER BY Name ASC
+            ];
+            
+            // Create the wrapper object to return
+            OrderDetailsWrapper orderDetails = new OrderDetailsWrapper();
+            orderDetails.order = order;
+            orderDetails.lineItems = lineItems;
+            
+            // Get product images for line items
+            if (!lineItems.isEmpty()) {
+                // Get the ContentVersion IDs from the products
+                Set<Id> productIds = new Set<Id>();
+                for (Order_Line_Item__c lineItem : lineItems) {
+                    if (lineItem.Product__c != null) {
+                        productIds.add(lineItem.Product__c);
+                    }
+                }
+                
+                // Query for ContentDocumentLinks for these products
+                Map<Id, Id> productToContentDocMap = new Map<Id, Id>();
+                for (ContentDocumentLink link : [
+                    SELECT ContentDocumentId, LinkedEntityId 
+                    FROM ContentDocumentLink 
+                    WHERE LinkedEntityId IN :productIds
+                ]) {
+                    productToContentDocMap.put(link.LinkedEntityId, link.ContentDocumentId);
+                }
+                
+                // Query ContentVersions
+                if (!productToContentDocMap.isEmpty()) {
+                    Map<Id, ContentVersion> contentDocToVersionMap = new Map<Id, ContentVersion>();
+                    for (ContentVersion version : [
+                        SELECT Id, ContentDocumentId
+                        FROM ContentVersion 
+                        WHERE ContentDocumentId IN :productToContentDocMap.values()
+                        AND IsLatest = true
+                    ]) {
+                        contentDocToVersionMap.put(version.ContentDocumentId, version);
+                    }
+                    
+                    // Update the line items with ContentVersion IDs
+                    for (Order_Line_Item__c lineItem : lineItems) {
+                        Id contentDocId = productToContentDocMap.get(lineItem.Product__c);
+                        if (contentDocId != null && contentDocToVersionMap.containsKey(contentDocId)) {
+                            ContentVersion version = contentDocToVersionMap.get(contentDocId);
+                            lineItem.Product__r.Image_URL__c = version.Id;
+                        }
+                    }
+                }
+            }
+            
+            return orderDetails;
+        } catch (Exception e) {
+            System.debug('Error retrieving order details: ' + e.getMessage());
+            throw new AuraHandledException('Error retrieving order details: ' + e.getMessage());
+        }
+    }
 
 	public class FilterWrapper {
 		@AuraEnabled
@@ -181,4 +271,12 @@ public with sharing class ProductService {
 		@AuraEnabled
 		public String Name;
 	}
+    
+    public class OrderDetailsWrapper {
+        @AuraEnabled
+        public Order__c order { get; set; }
+        
+        @AuraEnabled
+        public List<Order_Line_Item__c> lineItems { get; set; }
+    }
 }
