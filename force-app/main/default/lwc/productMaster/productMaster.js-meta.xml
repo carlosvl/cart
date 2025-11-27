@@ -1,10 +1,18 @@
 <?xml version="1.0"?>
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
-	<apiVersion>55.0</apiVersion>
+	<apiVersion>65.0</apiVersion>
 	<isExposed>true</isExposed>
 	<targets>
 		<target>lightning__HomePage</target>
 		<target>lightning__AppPage</target>
 		<target>lightningCommunity__Page</target>
+		<target>lightningCommunity__Default</target>
 	</targets>
+	<targetConfigs>
+		<targetConfig targets="lightningCommunity__Default">
+			<property name="cardTitle" type="String" default="My Shopping" label="Card Title" description="The title displayed on the shopping card" />
+			<property name="showFilterButton" type="Boolean" default="true" label="Show Filter Button" description="Display the filter button in the card header" />
+			<property name="showCartIcon" type="Boolean" default="true" label="Show Cart Icon" description="Display the shopping cart icon and badge in the card header" />
+		</targetConfig>
+	</targetConfigs>
 </LightningComponentBundle>

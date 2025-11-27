@@ -151,6 +151,87 @@ public with sharing class ProductService {
 		return ord.Id;
 	}
 
+	/**
+	 * Method to get order details with line items
+	 * @param orderId The ID of the order
+	 * @return OrderDetailsWrapper containing order and line items
+	 */
+	@AuraEnabled(cacheable=true)
+	public static OrderDetailsWrapper getOrderDetails(String orderId) {
+		OrderDetailsWrapper wrapper = new OrderDetailsWrapper();
+		
+		try {
+			if (String.isBlank(orderId)) {
+				wrapper.order = new Order__c();
+				wrapper.lineItems = new List<Order_Line_Item__c>();
+				return wrapper;
+			}
+			
+			// Query the order
+			wrapper.order = [
+				SELECT Id, Name, CreatedDate, Total_Price__c, Status__c
+				FROM Order__c
+				WHERE Id = :orderId
+				LIMIT 1
+			];
+			
+			// Query line items with product details
+			wrapper.lineItems = [
+				SELECT Id, Name, Product__c, Product__r.Name, Product__r.Price__c, 
+					   Price__c, Quantity__c, Total_Price__c
+				FROM Order_Line_Item__c
+				WHERE Order__c = :orderId
+				ORDER BY CreatedDate ASC
+			];
+		} catch (Exception e) {
+			System.debug('Error in getOrderDetails: ' + e.getMessage());
+			wrapper.order = new Order__c();
+			wrapper.lineItems = new List<Order_Line_Item__c>();
+		}
+		
+		return wrapper;
+	}
+
+	/**
+	 * Convert Order Line Items to Cart Items format
+	 * @param orderId The ID of the order
+	 * @return List of cart items in the format expected by the cart component
+	 */
+	@AuraEnabled(cacheable=true)
+	public static List<Map<String, Object>> convertOrderLineItemsToCartItems(String orderId) {
+		List<Map<String, Object>> cartItems = new List<Map<String, Object>>();
+		
+		try {
+			if (String.isBlank(orderId)) {
+				return cartItems;
+			}
+			
+			// Query line items with product details
+			List<Order_Line_Item__c> lineItems = [
+				SELECT Id, Product__c, Product__r.Name, Product__r.Image_URL__c, 
+					   Price__c, Quantity__c, Total_Price__c
+				FROM Order_Line_Item__c
+				WHERE Order__c = :orderId
+			];
+			
+			// Convert to cart item format
+			for (Order_Line_Item__c lineItem : lineItems) {
+				Map<String, Object> cartItem = new Map<String, Object>();
+				cartItem.put('productId', lineItem.Product__c);
+				cartItem.put('productName', lineItem.Product__r.Name);
+				cartItem.put('productImage', lineItem.Product__r.Image_URL__c);
+				cartItem.put('price', lineItem.Price__c);
+				cartItem.put('quantity', lineItem.Quantity__c);
+				cartItem.put('totalPrice', lineItem.Total_Price__c);
+				cartItems.add(cartItem);
+			}
+		} catch (Exception e) {
+			System.debug('Error in convertOrderLineItemsToCartItems: ' + e.getMessage());
+		}
+		
+		return cartItems;
+	}
+
 	public class FilterWrapper {
 		@AuraEnabled
 		public Decimal minPrice { get; set; }
@@ -180,5 +261,21 @@ public with sharing class ProductService {
 
 		@AuraEnabled
 		public String Name;
+	}
+
+	/**
+	 * Wrapper class for order details
+	 */
+	public class OrderDetailsWrapper {
+		@AuraEnabled
+		public Order__c order { get; set; }
+
+		@AuraEnabled
+		public List<Order_Line_Item__c> lineItems { get; set; }
+
+		public OrderDetailsWrapper() {
+			this.order = new Order__c();
+			this.lineItems = new List<Order_Line_Item__c>();
+		}
 	}
 }
