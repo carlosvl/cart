@@ -12,6 +12,7 @@ export default class ProductMaster extends LightningElement {
     @api cardTitle = 'My Shopping';
     @api showFilterButton;
     @api showCartIcon;
+    @api defaultCategory;
 
     @track totalInCart = 0;
     @track cartData = [];

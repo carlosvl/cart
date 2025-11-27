@@ -1,4 +1,4 @@
-import { LightningElement, wire, track } from "lwc";
+import { LightningElement, wire, track, api } from "lwc";
 
 // messageChannels
 import {
@@ -12,6 +12,8 @@ import FILTER_CHANNEL from "@salesforce/messageChannel/productFilterChannel__c";
 import getProducts from "@salesforce/apex/ProductService.getProducts";
 
 export default class ProductSearch extends LightningElement {
+	@api defaultCategory;
+	
 	searchKey = "";
 	subscription = null;
 	receivedMessage;
@@ -41,6 +43,10 @@ export default class ProductSearch extends LightningElement {
 
 	connectedCallback() {
 		this.subscribeMC();
+		// Apply default category if provided
+		if (this.defaultCategory) {
+			this.filtersData = { category: this.defaultCategory };
+		}
 	}
 
 	disconnectedCallback() {
