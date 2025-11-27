@@ -1,4 +1,4 @@
-import { LightningElement, track, wire } from 'lwc';
+import { LightningElement, api, track, wire } from 'lwc';
 // messageChannels
 import {
 	subscribe,
@@ -8,6 +8,12 @@ import {
 import CART_CHANNEL from "@salesforce/messageChannel/productAddRemoveCartChannel__c";
 
 export default class ProductMaster extends LightningElement {
+    // Configurable properties for Experience Builder
+    @api cardTitle = 'My Shopping';
+    @api showFilterButton;
+    @api showCartIcon;
+    @api defaultCategory;
+
     @track totalInCart = 0;
     @track cartData = [];
     

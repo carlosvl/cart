@@ -10,7 +10,47 @@
     <valueSet>
         <restricted>true</restricted>
         <valueSetDefinition>
-            <sorted>false</sorted>
+            <sorted>true</sorted>
+            <value>
+                <fullName>1</fullName>
+                <default>false</default>
+                <label>1</label>
+            </value>
+            <value>
+                <fullName>10</fullName>
+                <default>false</default>
+                <label>10</label>
+            </value>
+            <value>
+                <fullName>11</fullName>
+                <default>false</default>
+                <label>11</label>
+            </value>
+            <value>
+                <fullName>2</fullName>
+                <default>false</default>
+                <label>2</label>
+            </value>
+            <value>
+                <fullName>3</fullName>
+                <default>false</default>
+                <label>3</label>
+            </value>
+            <value>
+                <fullName>4</fullName>
+                <default>false</default>
+                <label>4</label>
+            </value>
+            <value>
+                <fullName>5</fullName>
+                <default>false</default>
+                <label>5</label>
+            </value>
+            <value>
+                <fullName>6</fullName>
+                <default>false</default>
+                <label>6</label>
+            </value>
             <value>
                 <fullName>7</fullName>
                 <default>false</default>
@@ -27,14 +67,29 @@
                 <label>9</label>
             </value>
             <value>
-                <fullName>10</fullName>
+                <fullName>L</fullName>
                 <default>false</default>
-                <label>10</label>
+                <label>L</label>
             </value>
             <value>
-                <fullName>11</fullName>
+                <fullName>M</fullName>
                 <default>false</default>
-                <label>11</label>
+                <label>M</label>
+            </value>
+            <value>
+                <fullName>S</fullName>
+                <default>false</default>
+                <label>S</label>
+            </value>
+            <value>
+                <fullName>XL</fullName>
+                <default>false</default>
+                <label>XL</label>
+            </value>
+            <value>
+                <fullName>XXL</fullName>
+                <default>false</default>
+                <label>XXL</label>
             </value>
         </valueSetDefinition>
     </valueSet>

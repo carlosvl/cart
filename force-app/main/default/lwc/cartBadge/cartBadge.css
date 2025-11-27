@@ -1,0 +1,15 @@
+.cart-badge-container {
+  display: inline-block;
+}
+
+.cart-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.cart-link:hover {
+  opacity: 0.8;
+}

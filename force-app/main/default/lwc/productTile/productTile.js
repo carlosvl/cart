@@ -1,13 +1,47 @@
-import {LightningElement, api, wire} from "lwc";
+import {LightningElement, api, wire, track} from "lwc";
 // messageChannels
 import { publish, MessageContext } from "lightning/messageService";
 import CART_CHANNEL from "@salesforce/messageChannel/productAddRemoveCartChannel__c";
+// Import the Apex method to get product images
+import getProductImage from "@salesforce/apex/ProductService.getProductImage";
 
 export default class ProductTile extends LightningElement {
 	@api product;
+	@track imageData;
+	@track imageLoading = true;
+	@track imageError = false;
 
 	@wire(MessageContext)
 	messageContext;
+	
+	connectedCallback() {
+		// If we have a product with an Image_URL__c (which now contains ContentVersionId)
+		// fetch the actual image data
+		if (this.product && this.product.Image_URL__c) {
+			this.loadProductImage();
+		}
+	}
+	
+	loadProductImage() {
+		this.imageLoading = true;
+		this.imageError = false;
+		
+		getProductImage({ contentVersionId: this.product.Image_URL__c })
+			.then(result => {
+				if (result) {
+					this.imageData = result;
+				} else {
+					this.imageError = true;
+				}
+			})
+			.catch(error => {
+				console.error('Error loading product image:', error);
+				this.imageError = true;
+			})
+			.finally(() => {
+				this.imageLoading = false;
+			});
+	}
 
 	publishChange(cartData, cartAction) {
 		const message = {
@@ -66,8 +100,18 @@ export default class ProductTile extends LightningElement {
 	}
 
 	get backgroundStyle() {
-		return `background-image:url(${this.product.Image_URL__c})`;
-		//return `background-image:url('https://i.imgur.com/KLe3XF0.jpg')`;
+		if (this.imageData) {
+			// Use the base64 encoded image data directly
+			return `background-image:url(${this.imageData})`;
+		} else if (this.imageLoading) {
+			// Show a loading state
+			return 'background-color: #f3f3f3;';
+		} else if (this.imageError || !this.product.Image_URL__c) {
+			// Show a default placeholder for error or missing image
+			return 'background-color: #f3f3f3;';
+		}
+		// Default fallback
+		return 'background-color: #f3f3f3;';
 	}
 
 	get totalPrice() {
