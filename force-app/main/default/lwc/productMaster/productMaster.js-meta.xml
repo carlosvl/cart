@@ -9,6 +9,11 @@
 		<target>lightningCommunity__Default</target>
 	</targets>
 	<targetConfigs>
+		<targetConfig targets="lightning__AppPage,lightning__HomePage">
+			<property name="cardTitle" type="String" default="My Shopping" label="Card Title" description="The title displayed on the shopping card" />
+			<property name="showFilterButton" type="Boolean" default="true" label="Show Filter Button" description="Display the filter button in the card header" />
+			<property name="showCartIcon" type="Boolean" default="true" label="Show Cart Icon" description="Display the shopping cart icon and badge in the card header" />
+		</targetConfig>
 		<targetConfig targets="lightningCommunity__Default">
 			<property name="cardTitle" type="String" default="My Shopping" label="Card Title" description="The title displayed on the shopping card" />
 			<property name="showFilterButton" type="Boolean" default="true" label="Show Filter Button" description="Display the filter button in the card header" />
