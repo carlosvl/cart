@@ -23,19 +23,17 @@
             {product.Name}
         </h1>
         <h2 class="slds-var-p-around_xx-small slds-text-body_regular">
-            <lightning-layout>
-                <lightning-layout-item size="6" class="slds-var-p-right_xx-small">
-                    Price:&nbsp;
-                    <lightning-formatted-number value={product.Price__c} format-style="currency"
-                        currency-code="USD">
-                    </lightning-formatted-number>
-                </lightning-layout-item>
-                <lightning-layout-item size="6" class="slds-var-p-right_xx-small bold-text">
-                    Total:&nbsp;
-                    <lightning-formatted-number value={totalPrice} format-style="currency" currency-code="USD">
-                    </lightning-formatted-number>
-                </lightning-layout-item>
-            </lightning-layout>
+            <div class="slds-var-m-bottom_xx-small">
+                Price:&nbsp;
+                <lightning-formatted-number value={product.Price__c} format-style="currency"
+                    currency-code="USD">
+                </lightning-formatted-number>
+            </div>
+            <div class="bold-text">
+                Total:&nbsp;
+                <lightning-formatted-number value={totalPrice} format-style="currency" currency-code="USD">
+                </lightning-formatted-number>
+            </div>
         </h2>
         <!-- <div class="slds-var-p-around_xx-small slds-text-body_small">
             <lightning-formatted-rich-text value={product.description}>
